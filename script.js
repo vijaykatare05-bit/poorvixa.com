@@ -366,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
       submittedAt: new Date().toISOString()
     };
     
-    // Hybrid submission logic: tries GoDaddy PHP first, falls back to Web3Forms (for free GitHub Pages email routing)
+    // Hybrid submission logic: tries GoDaddy PHP first, falls back to Web3Forms if not available
     fetch("contact.php", {
       method: "POST",
       body: new FormData(rfqForm)
@@ -389,35 +389,24 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch((error) => {
       console.log(error.message);
       
-      // Fallback: Submit to FormSubmit.co via AJAX (routing to info@poorvixa.com)
-      const payloadObj = {
-        name: document.getElementById("fullName").value,
-        email: document.getElementById("emailAddress").value,
-        "Company Name": document.getElementById("companyName").value,
-        "Phone Number": document.getElementById("phoneNumber").value,
-        "Country": document.getElementById("countryName").value,
-        "Product of Interest": document.getElementById("productInterest").value,
-        "Quantity Required": document.getElementById("quantityRequired").value,
-        "Message": document.getElementById("messageText").value,
-        "_subject": `🌾 New Bulk Export Inquiry: ${document.getElementById("productInterest").value}`
-      };
-      
-      fetch("https://formsubmit.co/ajax/info@poorvixa.com", {
+      // Fallback: Submit to Web3Forms via AJAX
+      const formData = new FormData(rfqForm);
+      formData.append("access_key", "6552bb46-5632-411c-896f-5e2dadd614af");
+      formData.append("subject", "🌾 New Bulk Export Inquiry: " + inquiryData.productInterest);
+      formData.append("from_name", "Poorvixa RFQ Portal");
+
+      fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify(payloadObj)
+        body: formData
       })
-      .then(res => res.json())
+      .then(response => response.json())
       .then(data => {
-        if (data.success === "true" || data.success === true) {
-          console.log("Form successfully submitted via FormSubmit.co");
+        if (data.success) {
+          console.log("Form successfully submitted via Web3Forms");
           triggerSuccess();
         } else {
-          console.error("FormSubmit.co submission error:", data.message);
-          alert("Submission error. Please reach us directly via WhatsApp or Email.");
+          console.error("Web3Forms submission error:", data.message);
+          alert("Submission error: " + data.message);
         }
       })
       .catch((err) => {
