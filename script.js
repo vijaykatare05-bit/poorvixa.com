@@ -366,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
       submittedAt: new Date().toISOString()
     };
     
-    // Hybrid submission logic: tries GoDaddy PHP first, falls back to Netlify Forms if not available
+    // Hybrid submission logic: tries GoDaddy PHP first, falls back to Web3Forms (for free GitHub Pages email routing)
     fetch("contact.php", {
       method: "POST",
       body: new FormData(rfqForm)
@@ -383,20 +383,31 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
       } else {
-        throw new Error("GoDaddy PHP mailer not active, falling back to Netlify.");
+        throw new Error("GoDaddy PHP mailer not active, falling back to Web3Forms.");
       }
     })
     .catch((error) => {
       console.log(error.message);
-      // Fallback: Submit to Netlify via AJAX
-      fetch("/", {
+      
+      // Fallback: Submit to Web3Forms via AJAX
+      const formData = new FormData(rfqForm);
+      formData.append("access_key", "f4b4434c-59d2-4937-97ba-fbaaed6b2e10");
+      formData.append("subject", `🌾 New Bulk Export Inquiry: ${document.getElementById("productInterest").value}`);
+      formData.append("from_name", document.getElementById("fullName").value);
+      
+      fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(new FormData(rfqForm)).toString()
+        body: formData
       })
-      .then(() => {
-        console.log("Form successfully submitted via Netlify Forms");
-        triggerSuccess();
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          console.log("Form successfully submitted via Web3Forms");
+          triggerSuccess();
+        } else {
+          console.error("Web3Forms submission error:", data.message);
+          alert("Submission error. Please reach us directly via WhatsApp or Email.");
+        }
       })
       .catch((err) => {
         console.error("Form submission failed in both hosting environments:", err);
