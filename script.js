@@ -393,7 +393,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const formData = new FormData(rfqForm);
       formData.append("access_key", "f4b4434c-59d2-4937-97ba-fbaaed6b2e10");
       formData.append("subject", `🌾 New Bulk Export Inquiry: ${document.getElementById("productInterest").value}`);
-      formData.append("from_name", document.getElementById("fullName").value);
+      formData.append("name", document.getElementById("fullName").value);
+      formData.append("email", document.getElementById("emailAddress").value);
+      formData.append("from_name", "Poorvixa Global Exim");
       
       fetch("https://api.web3forms.com/submit", {
         method: "POST",
