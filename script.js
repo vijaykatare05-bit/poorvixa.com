@@ -389,7 +389,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch((error) => {
       console.log(error.message);
       
-      // Fallback: Submit to FormSubmit.co via AJAX (routing to vijaykatare05@gmail.com)
+      // Fallback: Submit to FormSubmit.co via AJAX (routing to info@poorvixa.com)
       const payloadObj = {
         name: document.getElementById("fullName").value,
         email: document.getElementById("emailAddress").value,
@@ -402,7 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "_subject": `🌾 New Bulk Export Inquiry: ${document.getElementById("productInterest").value}`
       };
       
-      fetch("https://formsubmit.co/ajax/vijaykatare05@gmail.com", {
+      fetch("https://formsubmit.co/ajax/info@poorvixa.com", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
