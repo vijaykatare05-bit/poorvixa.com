@@ -389,25 +389,34 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch((error) => {
       console.log(error.message);
       
-      // Fallback: Submit to Web3Forms via AJAX
-      const formData = new FormData(rfqForm);
-      formData.append("access_key", "f4b4434c-59d2-4937-97ba-fbaaed6b2e10");
-      formData.append("subject", `🌾 New Bulk Export Inquiry: ${document.getElementById("productInterest").value}`);
-      formData.append("name", document.getElementById("fullName").value);
-      formData.append("email", document.getElementById("emailAddress").value);
-      formData.append("from_name", "Poorvixa Global Exim");
+      // Fallback: Submit to FormSubmit.co via AJAX (routing to vijaykatare05@gmail.com)
+      const payloadObj = {
+        name: document.getElementById("fullName").value,
+        email: document.getElementById("emailAddress").value,
+        "Company Name": document.getElementById("companyName").value,
+        "Phone Number": document.getElementById("phoneNumber").value,
+        "Country": document.getElementById("countryName").value,
+        "Product of Interest": document.getElementById("productInterest").value,
+        "Quantity Required": document.getElementById("quantityRequired").value,
+        "Message": document.getElementById("messageText").value,
+        "_subject": `🌾 New Bulk Export Inquiry: ${document.getElementById("productInterest").value}`
+      };
       
-      fetch("https://api.web3forms.com/submit", {
+      fetch("https://formsubmit.co/ajax/vijaykatare05@gmail.com", {
         method: "POST",
-        body: formData
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payloadObj)
       })
       .then(res => res.json())
       .then(data => {
-        if (data.success) {
-          console.log("Form successfully submitted via Web3Forms");
+        if (data.success === "true" || data.success === true) {
+          console.log("Form successfully submitted via FormSubmit.co");
           triggerSuccess();
         } else {
-          console.error("Web3Forms submission error:", data.message);
+          console.error("FormSubmit.co submission error:", data.message);
           alert("Submission error. Please reach us directly via WhatsApp or Email.");
         }
       })
